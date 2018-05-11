@@ -1,29 +1,24 @@
-'use strict';
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var lie = _interopDefault(require('lie'));
-var cloneBuffer = _interopDefault(require('clone-buffer'));
-var getArguments = _interopDefault(require('argsarray'));
-var events = require('events');
-var events__default = _interopDefault(events);
-var inherits = _interopDefault(require('inherits'));
-var uuidV4 = _interopDefault(require('uuid'));
-var debug = _interopDefault(require('debug'));
-var vm = _interopDefault(require('vm'));
-var ltgt = _interopDefault(require('ltgt'));
-var ReadableStreamCore = _interopDefault(require('readable-stream'));
-var Codec = _interopDefault(require('level-codec'));
-var bufferFrom = _interopDefault(require('buffer-from'));
-var crypto = _interopDefault(require('crypto'));
-var vuvuzela = _interopDefault(require('vuvuzela'));
-var levelup = _interopDefault(require('levelup'));
-var through2 = require('through2');
-var Deque = _interopDefault(require('double-ended-queue'));
-var fs = _interopDefault(require('fs'));
-var path = _interopDefault(require('path'));
-var level = _interopDefault(require('level'));
-var LevelWriteStream = _interopDefault(require('level-write-stream'));
+import lie from 'lie';
+import cloneBuffer from 'clone-buffer';
+import getArguments from 'argsarray';
+import events, { EventEmitter } from 'events';
+import inherits from 'inherits';
+import uuidV4 from 'uuid';
+import debug from 'debug';
+import vm from 'vm';
+import ltgt from 'ltgt';
+import ReadableStreamCore from 'readable-stream';
+import Codec from 'level-codec';
+import bufferFrom from 'buffer-from';
+import crypto from 'crypto';
+import vuvuzela from 'vuvuzela';
+import levelup from 'levelup';
+import { obj } from 'through2';
+import Deque from 'double-ended-queue';
+import fs from 'fs';
+import path from 'path';
+import level from 'level';
+import LevelWriteStream from 'level-write-stream';
 
 /* istanbul ignore next */
 var PouchPromise = typeof Promise === 'function' ? Promise : lie;
@@ -449,7 +444,7 @@ function nextTick(fn) {
   process.nextTick(fn);
 }
 
-inherits(Changes, events.EventEmitter);
+inherits(Changes, EventEmitter);
 
 /* istanbul ignore next */
 function attachBrowserEvents(self) {
@@ -475,7 +470,7 @@ function attachBrowserEvents(self) {
 }
 
 function Changes() {
-  events.EventEmitter.call(this);
+  EventEmitter.call(this);
   this._listeners = {};
 
   attachBrowserEvents(this);
@@ -528,7 +523,7 @@ Changes.prototype.removeListener = function (dbName, id) {
   if (!(id in this._listeners)) {
     return;
   }
-  events.EventEmitter.prototype.removeListener.call(this, dbName,
+  EventEmitter.prototype.removeListener.call(this, dbName,
     this._listeners[id]);
   delete this._listeners[id];
 };
@@ -831,7 +826,7 @@ function isRemote(db) {
 
 function listenerCount(ee, type) {
   return 'listenerCount' in ee ? ee.listenerCount(type) :
-                                 events.EventEmitter.listenerCount(ee, type);
+                                 EventEmitter.listenerCount(ee, type);
 }
 
 function parseDesignDocFunctionName(s) {
@@ -1405,7 +1400,7 @@ function latest(rev, metadata) {
   throw new Error('Unable to resolve latest revision for id ' + metadata.id + ', rev ' + rev);
 }
 
-inherits(Changes$2, events.EventEmitter);
+inherits(Changes$2, EventEmitter);
 
 function tryCatchInChangeListener(self, change, pending, lastSeq) {
   // isolate try/catches to avoid V8 deoptimizations
@@ -1417,7 +1412,7 @@ function tryCatchInChangeListener(self, change, pending, lastSeq) {
 }
 
 function Changes$2(db, opts, callback) {
-  events.EventEmitter.call(this);
+  EventEmitter.call(this);
   var self = this;
   this.db = db;
   opts = opts ? clone(opts) : {};
@@ -1726,10 +1721,10 @@ function attachmentNameError(name) {
   return false;
 }
 
-inherits(AbstractPouchDB, events.EventEmitter);
+inherits(AbstractPouchDB, EventEmitter);
 
 function AbstractPouchDB() {
-  events.EventEmitter.call(this);
+  EventEmitter.call(this);
 }
 
 AbstractPouchDB.prototype.post =
@@ -2681,11 +2676,11 @@ PouchDB.preferredAdapters = [];
 
 PouchDB.prefix = '_pouch_';
 
-var eventEmitter = new events.EventEmitter();
+var eventEmitter = new EventEmitter();
 
 function setUpEventEmitter(Pouch) {
-  Object.keys(events.EventEmitter.prototype).forEach(function (key) {
-    if (typeof events.EventEmitter.prototype[key] === 'function') {
+  Object.keys(EventEmitter.prototype).forEach(function (key) {
+    if (typeof EventEmitter.prototype[key] === 'function') {
       Pouch[key] = eventEmitter[key].bind(eventEmitter);
     }
   });
@@ -4001,13 +3996,13 @@ inherits(NotFoundError, Error);
 
 NotFoundError.prototype.name = 'NotFoundError';
 
-var EventEmitter = events__default.EventEmitter;
+var EventEmitter$1 = events.EventEmitter;
 var version$1 = "6.5.4";
 
 var NOT_FOUND_ERROR = new NotFoundError();
 
 var sublevel = function (nut, prefix, createStream, options) {
-  var emitter = new EventEmitter();
+  var emitter = new EventEmitter$1();
   emitter.sublevels = {};
   emitter.options = options;
 
@@ -5595,7 +5590,7 @@ function LevelPouch(opts, callback) {
         var results = [];
         var docstream = stores.docStore.readStream(readstreamOpts);
 
-        var throughStream = through2.obj(function (entry, _, next) {
+        var throughStream = obj(function (entry, _, next) {
           var metadata = entry.value;
           // winningRev and deleted are performance-killers, but
           // in newer versions of PouchDB, they are cached on the metadata
@@ -5755,7 +5750,7 @@ function LevelPouch(opts, callback) {
       }
     }
     var changeStream = stores.bySeqStore.readStream(streamOpts);
-    var throughStream = through2.obj(function (data, _, next) {
+    var throughStream = obj(function (data, _, next) {
       if (limit && called >= limit) {
         complete();
         return next();
@@ -6358,7 +6353,7 @@ var doMigrationTwo = function (db, stores, callback) {
         stores.docStore.createReadStream({
           startKey: '_',
           endKey: '_\xFF'
-        }).pipe(through2.obj(function (ch, _, next) {
+        }).pipe(obj(function (ch, _, next) {
           if (!isLocalId(ch.key)) {
             return next();
           }
@@ -6387,7 +6382,7 @@ var doMigrationTwo = function (db, stores, callback) {
             next();
           });
 
-        })).pipe(through2.obj(function (seq, _, next) {
+        })).pipe(obj(function (seq, _, next) {
           /* istanbul ignore if */
           if (deletedSeqs[seq]) {
             return next();
@@ -9992,9 +9987,9 @@ function replicate(src, target, opts, returnValue, result) {
 
 // We create a basic promise so the caller can cancel the replication possibly
 // before we have actually started listening to changes etc
-inherits(Replication, events.EventEmitter);
+inherits(Replication, EventEmitter);
 function Replication() {
-  events.EventEmitter.call(this);
+  EventEmitter.call(this);
   this.cancelled = false;
   this.state = 'pending';
   var self = this;
@@ -10075,7 +10070,7 @@ function replicateWrapper(src, target, opts, callback) {
   return replicateRet;
 }
 
-inherits(Sync, events.EventEmitter);
+inherits(Sync, EventEmitter);
 function sync$1(src, target, opts, callback) {
   if (typeof opts === 'function') {
     callback = opts;
@@ -10319,4 +10314,4 @@ PouchDB.plugin(LevelPouch$1)
 // are aggressively optimized and jsnext:main would normally give us this
 // aggressive bundle.
 
-module.exports = PouchDB;
+export default PouchDB;
